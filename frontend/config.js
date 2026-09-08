@@ -1,6 +1,6 @@
 // Deployment configuration for the live Sepolia GuestBook deployment.
 window.GUESTBOOK_CONFIG = {
-  CONTRACT_ADDRESS: "0x512F54e70FB6bC2132d5b44cc8423bA2fD54C14c",
+  CONTRACT_ADDRESS: "0x8457d9aa0af94b94235ad6fb46c5e683313656c3",
   CHAIN_ID_HEX: "0xaa36a7",
   CHAIN_NAME: "Sepolia",
   BLOCK_EXPLORER: "https://sepolia.etherscan.io",
