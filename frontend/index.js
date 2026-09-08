@@ -37,6 +37,12 @@
     els.live.classList.toggle("offline", !live);
   }
 
+  function setConfigured(enabled) {
+    els.refresh.disabled = !enabled;
+    els.name.disabled = !enabled;
+    els.sign.disabled = !enabled;
+  }
+
   function renderGuests(guests) {
     els.grid.innerHTML = "";
     els.empty.hidden = guests.length !== 0;
@@ -63,13 +69,30 @@
     renderGuests(guests);
   }
 
-  function createReadContract() {
+  async function createReadContract() {
     if (!cfg.CONTRACT_ADDRESS || cfg.CONTRACT_ADDRESS.includes("YOUR_DEPLOYED")) {
-      throw new Error("GuestBook contract address is not configured yet.");
+      throw new Error("GuestBook is not configured for Sepolia yet. Deploy GuestBook.sol with MetaMask on Sepolia, then add that contract address to frontend/config.js.");
     }
+
     readProvider = new ethers.JsonRpcProvider(cfg.READ_ONLY_RPC_URL);
+    const code = await readProvider.getCode(cfg.CONTRACT_ADDRESS);
+    if (code === "0x") {
+      throw new Error("No contract bytecode exists at the configured address on Sepolia. Check the GuestBook deployment address.");
+    }
+
     readContract = new ethers.Contract(cfg.CONTRACT_ADDRESS, cfg.CONTRACT_ABI, readProvider);
+
+    // Preflight the exact GuestBook interface so a random contract/EOA can never
+    // produce a confusing ethers BAD_DATA error on first page load.
+    try {
+      await readContract.getGuestCount();
+    } catch (error) {
+      console.error("GuestBook preflight failed", error);
+      throw new Error("The configured Sepolia address is not compatible with this GuestBook contract. Deploy the GuestBook.sol source from this repository and use its new contract address.");
+    }
+
     els.contractLink.href = `${cfg.BLOCK_EXPLORER}/address/${cfg.CONTRACT_ADDRESS}`;
+    setConfigured(true);
     return readContract;
   }
 
@@ -86,6 +109,11 @@
       setStatus("MetaMask is not installed. You can still browse the guest list.", "error");
       return;
     }
+    if (!readContract) {
+      setStatus("GuestBook contract is not configured on Sepolia yet.", "error");
+      return;
+    }
+
     try {
       browserProvider = new ethers.BrowserProvider(window.ethereum);
       await browserProvider.send("eth_requestAccounts", []);
@@ -111,6 +139,7 @@
       await connectWallet();
       if (!writeContract) return;
     }
+
     const name = els.name.value.trim();
     if (!name) return setStatus("Enter your name.", "error");
     if (new TextEncoder().encode(name).length > 64) return setStatus("Name must be at most 64 bytes.", "error");
@@ -139,8 +168,9 @@
   }
 
   async function init() {
+    setConfigured(false);
     try {
-      createReadContract();
+      await createReadContract();
       await loadGuests();
       setLive(true);
 
@@ -153,29 +183,32 @@
       });
     } catch (error) {
       console.error(error);
-      els.network.textContent = "Not configured";
+      els.network.textContent = "Contract not ready";
       els.network.className = "status-pill error";
+      setLive(false);
       setStatus(error.message, "error");
     }
   }
 
   els.connect.addEventListener("click", connectWallet);
+
   els.refresh.addEventListener("click", async () => {
     try {
       await loadGuests();
       setStatus("Guest list refreshed.", "success");
     } catch (error) {
-      setStatus(error.message, "error");
+      setStatus(error?.shortMessage || error?.message || "Unable to refresh guest list.", "error");
     }
   });
+
   els.form.addEventListener("submit", (event) => {
     event.preventDefault();
     signGuest();
   });
 
   if (window.ethereum) {
-    window.ethereum.on("accountsChanged", async () => window.location.reload());
-    window.ethereum.on("chainChanged", async () => window.location.reload());
+    window.ethereum.on("accountsChanged", () => window.location.reload());
+    window.ethereum.on("chainChanged", () => window.location.reload());
   }
 
   init();
