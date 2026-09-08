@@ -1,6 +1,6 @@
-// Deployment configuration. Replace CONTRACT_ADDRESS after deploying GuestBook.sol.
+// Deployment configuration for the deployed GuestBook contract on Ethereum Sepolia.
 window.GUESTBOOK_CONFIG = {
-  CONTRACT_ADDRESS: "0xYOUR_DEPLOYED_CONTRACT_ADDRESS",
+  CONTRACT_ADDRESS: "0x16BF0b01119a667F5526330BF53Ba4D26b55B589",
   CHAIN_ID_HEX: "0xaa36a7",
   CHAIN_NAME: "Sepolia",
   BLOCK_EXPLORER: "https://sepolia.etherscan.io",
