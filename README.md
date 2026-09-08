@@ -21,7 +21,7 @@ Each wallet can sign once. Names are validated on-chain to be non-empty and at m
 ## Local development
 
 ```bash
-npm ci
+npm install
 npm run check
 npm run frontend
 ```
@@ -49,4 +49,10 @@ After deployment, copy the contract address into `frontend/config.js`.
 7. Deploy the frontend through GitHub Pages/Netlify/Vercel.
 8. Before mainnet, obtain independent smart-contract security review and operational review.
 
-This repository is testnet/staging ready. It is not an audited mainnet system and should not be represented as such until the contract and deployment operations are independently reviewed.
+## CI/CD
+
+GitHub Actions runs on pushes and pull requests to `main` and performs dependency installation, contract compilation, unit tests, and coverage. The current CI intentionally uses `npm install` because this repository does not yet commit a `package-lock.json`; npm caching is disabled for the same reason.
+
+GitHub Pages deploys the contents of `frontend/` after a successful push to `main`.
+
+This repository is testnet/staging ready. It is **not an audited mainnet system** and should not be represented as such until the contract and deployment operations are independently reviewed.
