@@ -1,0 +1,21 @@
+{
+  "name": "guestbook-dapp",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Production-oriented decentralized guest book with Solidity, Hardhat, ethers.js and MetaMask.",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "test:coverage": "hardhat coverage",
+    "deploy:localhost": "hardhat run scripts/deploy.js --network localhost",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
+    "frontend": "npx serve frontend",
+    "check": "npm run compile && npm test"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.0",
+    "serve": "^14.2.4"
+  }
+}
