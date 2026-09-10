@@ -69,12 +69,48 @@
     renderGuests(guests);
   }
 
+  function createRpcProvider(url, network) {
+    // The Sepolia network is fixed for these read-only RPC URLs, so using a
+    // static network avoids an initial eth_chainId discovery request. This is
+    // useful when a browser, proxy, or privacy layer interferes with that call.
+    return new ethers.JsonRpcProvider(url, network, {
+      staticNetwork: network,
+      pollingInterval: cfg.POLL_INTERVAL_MS
+    });
+  }
+
+  async function createReadProvider() {
+    const network = ethers.Network.from(Number(BigInt(cfg.CHAIN_ID_HEX)));
+    const urls = Array.isArray(cfg.RPC_URLS) && cfg.RPC_URLS.length
+      ? cfg.RPC_URLS
+      : [cfg.READ_ONLY_RPC_URL];
+
+    const providers = urls.map((url, index) => ({
+      provider: createRpcProvider(url, network),
+      priority: index + 1,
+      weight: 1
+    }));
+
+    // Quorum 1 means the first healthy RPC can serve the request. If one
+    // endpoint is unavailable in Edge, another Sepolia endpoint can answer.
+    const provider = new ethers.FallbackProvider(providers, network, {
+      quorum: 1,
+      pollingInterval: cfg.POLL_INTERVAL_MS
+    });
+
+    // Prove the fallback provider can actually reach Sepolia before creating
+    // the contract object. This gives the UI a useful failure instead of an
+    // endless JsonRpcProvider network-detection loop.
+    await provider.getBlockNumber();
+    return provider;
+  }
+
   async function createReadContract() {
     if (!cfg.CONTRACT_ADDRESS || cfg.CONTRACT_ADDRESS.includes("YOUR_DEPLOYED")) {
       throw new Error("GuestBook is not configured for Sepolia yet. Deploy GuestBook.sol with MetaMask on Sepolia, then add that contract address to frontend/config.js.");
     }
 
-    readProvider = new ethers.JsonRpcProvider(cfg.READ_ONLY_RPC_URL);
+    readProvider = await createReadProvider();
     const code = await readProvider.getCode(cfg.CONTRACT_ADDRESS);
     if (code === "0x") {
       throw new Error("No contract bytecode exists at the configured address on Sepolia. Check the GuestBook deployment address.");
@@ -82,8 +118,6 @@
 
     readContract = new ethers.Contract(cfg.CONTRACT_ADDRESS, cfg.CONTRACT_ABI, readProvider);
 
-    // Preflight the exact GuestBook interface so a random contract/EOA can never
-    // produce a confusing ethers BAD_DATA error on first page load.
     try {
       await readContract.getGuestCount();
     } catch (error) {
@@ -110,7 +144,7 @@
       return;
     }
     if (!readContract) {
-      setStatus("GuestBook contract is not configured on Sepolia yet.", "error");
+      setStatus("GuestBook contract is not available right now. Refresh the page and try again.", "error");
       return;
     }
 
@@ -183,10 +217,10 @@
       });
     } catch (error) {
       console.error(error);
-      els.network.textContent = "Contract not ready";
+      els.network.textContent = "RPC unavailable";
       els.network.className = "status-pill error";
       setLive(false);
-      setStatus(error.message, "error");
+      setStatus("Unable to reach a Sepolia RPC from this browser. Try refreshing, or disable browser/VPN/network filtering for the site.", "error");
     }
   }
 
