@@ -5,6 +5,12 @@ window.GUESTBOOK_CONFIG = {
   CHAIN_NAME: "Sepolia",
   BLOCK_EXPLORER: "https://sepolia.etherscan.io",
   READ_ONLY_RPC_URL: "https://ethereum-sepolia-rpc.publicnode.com",
+  RPC_URLS: [
+    "https://ethereum-sepolia-rpc.publicnode.com",
+    "https://rpc.sepolia.org",
+    "https://sepolia.drpc.org",
+    "https://sepolia.gateway.tenderly.co"
+  ],
   POLL_INTERVAL_MS: 15000,
   CONTRACT_ABI: [
     {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"wallet","type":"address"},{"indexed":false,"internalType":"string","name":"name","type":"string"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"GuestRegistered","type":"event"},
