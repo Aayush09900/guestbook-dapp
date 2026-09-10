@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="GuestBook — a decentralized on-chain guest book on Ethereum Sepolia.">
   <meta name="theme-color" content="#0b1020">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>GuestBook DApp</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -18,14 +20,16 @@
       </div>
       <div class="hero-actions">
         <span id="networkStatus" class="status-pill">Checking network…</span>
-        <button id="connectBtn" class="primary">Connect MetaMask</button>
+        <button id="connectBtn" class="primary" type="button">Connect MetaMask</button>
+        <a id="mobileWalletBtn" class="secondary mobile-wallet" href="#" rel="noopener">Open in MetaMask Mobile</a>
+        <p class="wallet-tip">Desktop: MetaMask extension or QR. Phone: MetaMask Mobile or its in-app browser.</p>
       </div>
     </header>
 
     <section class="stats">
       <article><span>Guests</span><strong id="guestCount">—</strong></article>
       <article><span>Wallet</span><strong id="walletAddress">Not connected</strong></article>
-      <article><span>Contract</span><a id="contractLink" href="#" target="_blank" rel="noopener">View on Etherscan</a></article>
+      <article><span>Contract</span><a id="contractLink" href="#" target="_blank" rel="noopener noreferrer">View on Etherscan</a></article>
     </section>
 
     <section class="card">
@@ -34,12 +38,12 @@
           <p class="eyebrow">ON-CHAIN SIGNATURE</p>
           <h2>Leave your mark</h2>
         </div>
-        <button id="refreshBtn" class="secondary">Refresh</button>
+        <button id="refreshBtn" class="secondary" type="button">Refresh</button>
       </div>
       <form id="guestForm">
         <label for="name">Display name</label>
         <div class="form-row">
-          <input id="name" name="name" maxlength="64" autocomplete="name" placeholder="Your name" required>
+          <input id="name" name="name" maxlength="64" autocomplete="name" inputmode="text" placeholder="Your name" required>
           <button id="signBtn" type="submit" class="primary">Sign Guest Book</button>
         </div>
       </form>
