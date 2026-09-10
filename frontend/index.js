@@ -380,8 +380,10 @@
   els.connect.addEventListener("click", connectWallet);
 
   if (els.mobileWallet) {
+    const mobile = isMobileBrowser();
     els.mobileWallet.href = getMetaMaskDeepLink();
-    els.mobileWallet.hidden = !isMobileBrowser();
+    els.mobileWallet.hidden = !mobile;
+    els.mobileWallet.style.display = mobile ? "block" : "none";
   }
 
   els.refresh.addEventListener("click", async () => {
