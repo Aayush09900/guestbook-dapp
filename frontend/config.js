@@ -7,10 +7,12 @@ window.GUESTBOOK_CONFIG = {
   READ_ONLY_RPC_URL: "https://ethereum-sepolia-rpc.publicnode.com",
   RPC_URLS: [
     "https://ethereum-sepolia-rpc.publicnode.com",
-    "https://rpc.sepolia.org",
     "https://sepolia.drpc.org",
-    "https://sepolia.gateway.tenderly.co"
+    "https://sepolia.gateway.tenderly.co",
+    "https://eth-sepolia.blockscout.com/api"
   ],
+  BLOCKSCOUT_LOGS_URL: "https://eth-sepolia.blockscout.com/api/v2/addresses/0x8457d9aa0af94b94235ad6fb46c5e683313656c3/logs",
+  METAMASK_CONNECT_VERSION: "2.1.1",
   POLL_INTERVAL_MS: 15000,
   CONTRACT_ABI: [
     {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"wallet","type":"address"},{"indexed":false,"internalType":"string","name":"name","type":"string"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"GuestRegistered","type":"event"},
